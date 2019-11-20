@@ -4,6 +4,7 @@ import pt from 'date-fns/locale/pt';
 import Appointment from '../models/Appointment';
 import User from '../models/User';
 import File from '../models/File';
+import Mail from '../../lib/Mail';
 
 import Notification from '../schemas/Notification';
 
@@ -124,8 +125,15 @@ class AppointmentController {
     }
 
     async delete(req, res) {
-        console.log('id', req.params.id);
-        const appointment = await Appointment.findByPk(req.params.id);
+        const appointment = await Appointment.findByPk(req.params.id, {
+            include: [
+                {
+                    model: User,
+                    as: 'provider',
+                    attributes: ['name', 'email'],
+                },
+            ],
+        });
 
         if (appointment.user_id !== req.userId) {
             return res.status(401).json({
@@ -144,6 +152,12 @@ class AppointmentController {
         appointment.canceled_at = new Date();
 
         await appointment.save();
+
+        await Mail.sendMail({
+            to: `${appointment.provider.name} <${appointment.provider.email}>`,
+            subject: 'Agendamento cancelado',
+            text: 'Você tem um novo cancelamento',
+        });
 
         return res.json(appointment);
     }
