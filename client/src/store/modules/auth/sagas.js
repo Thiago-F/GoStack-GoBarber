@@ -61,8 +61,13 @@ export function setToken({ payload }) {
     }
 }
 
+export function signOut({ payload }) {
+    history.push('/');
+}
+
 export default all([
     takeLatest('persist/REHYDRATE', setToken),
     takeLatest('@auth/SIGN_IN_REQUEST', signIn),
     takeLatest('@auth/SIGN_Up_REQUEST', signUp),
+    takeLatest('@auth/SIGN_OUT', signOut),
 ]);
