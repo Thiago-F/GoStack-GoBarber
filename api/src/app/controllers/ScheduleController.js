@@ -38,7 +38,7 @@ class ScheduleController {
             ],
         });
 
-        return res.json({ appointments });
+        return res.json(appointments);
     }
 }
 
