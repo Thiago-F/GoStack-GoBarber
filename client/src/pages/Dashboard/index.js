@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState, useEffect, useMemo } from 'react';
 
 import {
@@ -38,6 +39,8 @@ export default function Dashboard() {
 
             const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+            console.log('timezone', timezone);
+
             const data = range.map(hour => {
                 const checkDate = setSeconds(
                     setMinutes(setHours(date, hour), 0),
@@ -45,6 +48,15 @@ export default function Dashboard() {
                 );
 
                 const compareDate = utcToZonedTime(checkDate, timezone);
+
+                console.log(
+                    parseISO(response.data[0].date),
+                    compareDate,
+                    isEqual(parseISO(response.data[0].date), compareDate),
+
+                    new Date(response.data[0].date).getTime(),
+                    new Date(parseISO(compareDate)).getTime()
+                );
 
                 return {
                     time: `${hour}:00h`,
@@ -84,7 +96,7 @@ export default function Dashboard() {
             <ul>
                 {schedule.map(time => (
                     <Time
-                        key={(time, time)}
+                        key={time.time}
                         past={time.past}
                         available={!time.appointment}
                     >
